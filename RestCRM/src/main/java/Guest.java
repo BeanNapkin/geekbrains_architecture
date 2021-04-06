@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -6,7 +7,7 @@ public class Guest {
     private String name;
     private String phone;
     private String email;
-    private List<Reservation> reservations;
+    private final List<Reservation> reservations = new ArrayList<>();
 
     public Guest(UUID idGuest, String name, String phone, String email) {
         this.idGuest = idGuest;

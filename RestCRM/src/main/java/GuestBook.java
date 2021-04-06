@@ -1,13 +1,15 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class GuestBook {
-    public List<Guest> guests;
+    private List<Guest> guests = new ArrayList<>();
+    private SubjectImpl<Guest> newGuestSubject = new SubjectImpl<>();
 
     public Guest searchGuest(String phone) {
 
         for (int i = 0; i < guests.size(); i++) {
-            if (guests.get(i).getPhone() == phone)
+            if (guests.get(i).getPhone().equals(phone))
                 return guests.get(i);
         }
 
@@ -20,7 +22,14 @@ public class GuestBook {
             return searchGuest(phone);
         }
 
-        return new Guest(UUID.randomUUID(), name, phone, email);
+        Guest newGuest = new Guest(UUID.randomUUID(), name, phone, email);
+        guests.add(newGuest);
+        newGuestSubject.notifyObservers(newGuest);
+
+        return newGuest;
     }
 
+    public Subject<Guest> getNewGuestSubject() {
+        return newGuestSubject;
+    }
 }
