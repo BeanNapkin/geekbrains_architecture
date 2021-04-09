@@ -1,29 +1,33 @@
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class GuestBook {
-    private List<Guest> guests = new ArrayList<>();
+
+    private IdentityMap identityMap;
     private SubjectImpl<Guest> newGuestSubject = new SubjectImpl<>();
 
-    public Guest searchGuest(String phone) {
-
-        for (int i = 0; i < guests.size(); i++) {
-            if (guests.get(i).getPhone().equals(phone))
-                return guests.get(i);
-        }
-
-        return null;
+    public GuestBook(IdentityMap identityMap) {
+        this.identityMap = identityMap;
     }
 
-    public Guest getOrCreateGuest(String phone, String name, String email) {
+    public Guest searchGuest(String phone) throws SQLException {
+        try {
+            return identityMap.getGuestByPhone(phone);
+        } catch (RecordNotFoundException e) {
+            return null;
+        }
+    }
+
+    public Guest getOrCreateGuest(String phone, String name, String email) throws SQLException {
 
         if (searchGuest(phone) != null) {
             return searchGuest(phone);
         }
 
-        Guest newGuest = new Guest(UUID.randomUUID(), name, phone, email);
-        guests.add(newGuest);
+        Guest newGuest = new Guest(name, phone, email);
+
+        identityMap.insert(newGuest);
         newGuestSubject.notifyObservers(newGuest);
 
         return newGuest;
